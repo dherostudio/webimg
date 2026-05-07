@@ -63,33 +63,35 @@
   animation: float-in 480ms var(--ease-apple) both;
 }
 
-/* App icon — squircle with custom WI monogram */
+/* App icon — squircle plate that blends with the active theme */
 .app-icon {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 22.4%;
-  background: linear-gradient(180deg, #fafafa 0%, #d8d8dc 100%);
-  color: #0a0a0c;
+  /* Dark mode: dark plate, light mark */
+  background: linear-gradient(180deg, #2a2a2e 0%, #0a0a0c 100%);
+  color: #fafafa;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.08) inset,
-    0 4px 12px -2px rgba(0, 0, 0, 0.55),
-    0 0 0 0.5px rgba(0, 0, 0, 0.2);
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.4) inset,
+    0 4px 14px -2px rgba(0, 0, 0, 0.55),
+    0 0 0 0.5px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   user-select: none;
   transition: transform 200ms var(--ease-apple), box-shadow 200ms var(--ease-apple);
 }
 
 [data-theme='light'] .app-icon {
-  background: linear-gradient(180deg, #2a2a2e 0%, #0a0a0c 100%);
-  color: #fafafa;
+  /* Light mode: light plate, dark mark */
+  background: linear-gradient(180deg, #fafafa 0%, #d8d8dc 100%);
+  color: #0a0a0c;
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.14) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.4) inset,
-    0 4px 14px -2px rgba(0, 0, 0, 0.28),
-    0 0 0 0.5px rgba(0, 0, 0, 0.32);
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.08) inset,
+    0 4px 12px -2px rgba(0, 0, 0, 0.18),
+    0 0 0 0.5px rgba(0, 0, 0, 0.12);
 }
 
 .app-icon:hover {
@@ -97,16 +99,21 @@
 }
 
 .app-icon__glyph {
-  width: 72%;
-  height: 72%;
-  position: relative;
+  width: 58%;
+  height: 58%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 2;
   display: block;
-  filter: drop-shadow(0 0.5px 0 rgba(255, 255, 255, 0.18));
+  /* Dark mode: light mark, subtle dark inset */
+  filter: drop-shadow(0 0.5px 0 rgba(0, 0, 0, 0.4));
 }
 
 [data-theme='light'] .app-icon__glyph {
-  filter: drop-shadow(0 0.5px 0 rgba(0, 0, 0, 0.4));
+  /* Light mode: dark mark, subtle light inset */
+  filter: drop-shadow(0 0.5px 0 rgba(255, 255, 255, 0.5));
 }
 
 .app-icon__shine {

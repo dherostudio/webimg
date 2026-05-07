@@ -4,11 +4,8 @@ interface Props {
 }
 
 /**
- * "WI" app icon — squircle plate with a custom geometric monogram.
- *
- * The mark is drawn as SVG paths (not text) for crisp rendering at any size:
- *   - W: four-stroke chevron with sharp bevel joins
- *   - I: vertical stem with serif caps so it reads as a letter, not a divider
+ * webimg app icon — squircle plate with geometric mark.
+ * Mark uses currentColor so it inherits the theme.
  */
 export function AppIcon({ size = 28, className }: Props) {
   return (
@@ -20,24 +17,14 @@ export function AppIcon({ size = 28, className }: Props) {
     >
       <svg
         className="app-icon__glyph"
-        viewBox="0 0 64 64"
+        viewBox="0 0 256 256"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden
       >
-        {/* W — four-stroke zigzag */}
         <path
-          d="M 8 20 L 17 44 L 25 30 L 33 44 L 42 20"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="7"
-          strokeLinecap="square"
-          strokeLinejoin="bevel"
+          fill="currentColor"
+          d="M256 64V128H192.5L160 95L128 64L96 95L63.5 128H64L128 192V256H64.5L32 223L0 192V64L64 0H192L256 64ZM256 192V256H192.5L160 223L128 192V128H192L256 192Z"
         />
-        {/* I — vertical stem */}
-        <rect x="49" y="20" width="7" height="24" fill="currentColor" />
-        {/* I serifs: top + bottom bars */}
-        <rect x="46" y="20" width="13" height="3" fill="currentColor" />
-        <rect x="46" y="41" width="13" height="3" fill="currentColor" />
       </svg>
       <span className="app-icon__shine" aria-hidden />
     </div>
