@@ -23,6 +23,8 @@ interface Props {
   cropAspect: number;
   busy: boolean;
   theme: 'light' | 'dark';
+  isBatch: boolean;
+  batchCount: number;
   onWidthChange: (w: number) => void;
   onHeightChange: (h: number) => void;
   onAspectLockedChange: (locked: boolean) => void;
@@ -148,23 +150,36 @@ export function Inspector(props: Props) {
           )}
         </Group>
 
-        <Group title="Filename">
-          <input
-            type="text"
-            placeholder="mountain landscape sunset"
-            value={props.filenameInput}
-            onChange={(e) => props.onFilenameChange(e.target.value)}
-          />
-          <div className="slug-out mono" title={previewName}>
-            {previewName}
-          </div>
-        </Group>
+        {!props.isBatch && (
+          <Group title="Filename">
+            <input
+              type="text"
+              placeholder="mountain landscape sunset"
+              value={props.filenameInput}
+              onChange={(e) => props.onFilenameChange(e.target.value)}
+            />
+            <div className="slug-out mono" title={previewName}>
+              {previewName}
+            </div>
+          </Group>
+        )}
+        {props.isBatch && (
+          <Group title="Filename">
+            <p className="caveat">Each image has its own filename in the sidebar.</p>
+          </Group>
+        )}
       </div>
 
       <div className="inspector__footer">
         <button className="primary-btn" disabled={props.busy} onClick={props.onExport}>
           <DownloadIcon />
-          <span>{props.busy ? 'Exporting…' : 'Export image'}</span>
+          <span>
+            {props.busy
+              ? 'Exporting…'
+              : props.isBatch
+                ? `Export ${props.batchCount} images (.zip)`
+                : 'Export image'}
+          </span>
         </button>
       </div>
     </aside>

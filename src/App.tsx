@@ -1,14 +1,18 @@
+import JSZip from 'jszip';
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { BatchSidebar } from './components/BatchSidebar';
 import { DropZone } from './components/DropZone';
 import { Editor, type EditorHandle } from './components/Editor';
 import { Inspector } from './components/Inspector';
 import { Toolbar } from './components/Toolbar';
 import { TopBar } from './components/TopBar';
 import { ZoomHud } from './components/ZoomHud';
-import type { BgColor, CropRect, FitMode, OutputFormat, Rotation } from './types';
+import type { BatchItem, BgColor, CropFrac, CropRect, FitMode, OutputFormat, Rotation } from './types';
 import { useTheme } from './useTheme';
+import { fracToRect, FULL_FRAC, orientedDims, rectToFrac } from './utils/cropFrac';
 import { downloadBlob, exportImage } from './utils/exportImage';
 import { extensionFor, toSlug } from './utils/slug';
+import { makeThumbnail } from './utils/thumbnail';
 import './App.css';
 
 type StatusKind = 'success' | 'error' | 'info';
@@ -17,16 +21,11 @@ interface Status {
   message: string;
 }
 
-interface LoadedImage {
-  source: HTMLImageElement;
-  filename: string;
-}
-
-function loadImage(file: File): Promise<LoadedImage> {
+function loadImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
-    img.onload = () => resolve({ source: img, filename: file.name });
+    img.onload = () => resolve(img);
     img.onerror = () => {
       URL.revokeObjectURL(url);
       reject(new Error('Could not decode image'));
@@ -39,11 +38,20 @@ function stripExt(name: string): string {
   return name.replace(/\.[^.]+$/, '');
 }
 
+let nextBatchId = 1;
+function newId(): string {
+  return `b${nextBatchId++}`;
+}
+
 export default function App() {
   const { theme, toggle: toggleTheme } = useTheme();
   const editorRef = useRef<EditorHandle>(null);
-  const [loaded, setLoaded] = useState<LoadedImage | null>(null);
-  const [crop, setCrop] = useState<CropRect>({ x: 0, y: 0, w: 0, h: 0 });
+  const dropAddRef = useRef<HTMLInputElement>(null);
+
+  const [batch, setBatch] = useState<BatchItem[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  const [cropFrac, setCropFrac] = useState<CropFrac>(FULL_FRAC);
   const [outputWidth, setOutputWidth] = useState(0);
   const [outputHeight, setOutputHeight] = useState(0);
   const [aspectLocked, setAspectLocked] = useState(true);
@@ -55,40 +63,106 @@ export default function App() {
   const [fit, setFit] = useState<FitMode>('contain');
   const [bg, setBg] = useState<BgColor>('transparent');
   const [customColor, setCustomColor] = useState('#0a84ff');
-  const [filenameInput, setFilenameInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<Status | null>(null);
   const [zoom, setZoom] = useState(1);
 
-  const handleFile = useCallback(async (file: File) => {
+  const activeItem = useMemo(
+    () => batch.find((b) => b.id === activeId) ?? null,
+    [batch, activeId]
+  );
+
+  // Active image's oriented dimensions — used to translate fraction crop to pixel crop
+  const activeDims = useMemo(() => {
+    if (!activeItem) return { w: 0, h: 0 };
+    return orientedDims(activeItem.source, rotation);
+  }, [activeItem, rotation]);
+
+  const cropRect: CropRect = useMemo(
+    () => fracToRect(cropFrac, activeDims.w, activeDims.h),
+    [cropFrac, activeDims]
+  );
+
+  const cropAspect = cropRect.w > 0 && cropRect.h > 0 ? cropRect.w / cropRect.h : 1;
+
+  const handleFiles = useCallback(async (files: File[]) => {
+    setStatus(null);
     try {
-      const result = await loadImage(file);
-      setLoaded(result);
-      const w = result.source.naturalWidth;
-      const h = result.source.naturalHeight;
-      setCrop({ x: 0, y: 0, w, h });
-      setOutputWidth(w);
-      setOutputHeight(h);
-      setRotation(0);
-      setFlipH(false);
-      setFlipV(false);
-      setFilenameInput(stripExt(file.name));
-      setStatus(null);
+      const newItems: BatchItem[] = [];
+      for (const file of files) {
+        const source = await loadImage(file);
+        const thumbnailUrl = await makeThumbnail(source);
+        newItems.push({
+          id: newId(),
+          source,
+          originalFilename: file.name,
+          customFilename: stripExt(file.name),
+          thumbnailUrl,
+        });
+      }
+      setBatch((prev) => {
+        const next = [...prev, ...newItems];
+        // First import: initialize crop + dims based on the first new item
+        if (prev.length === 0 && newItems.length > 0) {
+          const first = newItems[0];
+          setActiveId(first.id);
+          const w = first.source.naturalWidth;
+          const h = first.source.naturalHeight;
+          setCropFrac(FULL_FRAC);
+          setOutputWidth(w);
+          setOutputHeight(h);
+          setRotation(0);
+          setFlipH(false);
+          setFlipV(false);
+        }
+        return next;
+      });
     } catch (e) {
-      setStatus({ kind: 'error', message: `Failed to load image: ${(e as Error).message}` });
+      setStatus({ kind: 'error', message: `Failed to load: ${(e as Error).message}` });
     }
   }, []);
 
-  const cropAspect = crop.w > 0 && crop.h > 0 ? crop.w / crop.h : 1;
+  const handleSelectItem = useCallback((id: string) => {
+    setActiveId(id);
+  }, []);
+
+  const handleRenameItem = useCallback((id: string, name: string) => {
+    setBatch((prev) => prev.map((b) => (b.id === id ? { ...b, customFilename: name } : b)));
+  }, []);
+
+  const handleRemoveItem = useCallback(
+    (id: string) => {
+      setBatch((prev) => {
+        const next = prev.filter((b) => b.id !== id);
+        if (id === activeId) {
+          setActiveId(next[0]?.id ?? null);
+        }
+        if (next.length === 0) {
+          // Reset transient state
+          setCropFrac(FULL_FRAC);
+          setOutputWidth(0);
+          setOutputHeight(0);
+        }
+        return next;
+      });
+    },
+    [activeId]
+  );
+
+  const handleAddMore = useCallback(() => {
+    dropAddRef.current?.click();
+  }, []);
 
   const handleCropChange = useCallback(
     (next: CropRect) => {
-      setCrop(next);
+      if (activeDims.w === 0 || activeDims.h === 0) return;
+      const frac = rectToFrac(next, activeDims.w, activeDims.h);
+      setCropFrac(frac);
       if (aspectLocked && outputWidth > 0 && next.h > 0) {
         setOutputHeight(Math.max(1, Math.round(outputWidth / (next.w / next.h))));
       }
     },
-    [aspectLocked, outputWidth]
+    [activeDims, aspectLocked, outputWidth]
   );
 
   const handleWidthChange = useCallback(
@@ -112,27 +186,23 @@ export default function App() {
   );
 
   const handleResetCrop = useCallback(() => {
-    if (!loaded) return;
-    const swapped = rotation === 90 || rotation === 270;
-    const w = swapped ? loaded.source.naturalHeight : loaded.source.naturalWidth;
-    const h = swapped ? loaded.source.naturalWidth : loaded.source.naturalHeight;
-    setCrop({ x: 0, y: 0, w, h });
-    setOutputWidth(w);
-    setOutputHeight(h);
-  }, [loaded, rotation]);
+    if (!activeItem) return;
+    const dims = orientedDims(activeItem.source, rotation);
+    setCropFrac(FULL_FRAC);
+    setOutputWidth(dims.w);
+    setOutputHeight(dims.h);
+  }, [activeItem, rotation]);
 
   const handleRotate = useCallback(
     (next: Rotation) => {
-      if (!loaded) return;
-      const swapped = next === 90 || next === 270;
-      const w = swapped ? loaded.source.naturalHeight : loaded.source.naturalWidth;
-      const h = swapped ? loaded.source.naturalWidth : loaded.source.naturalHeight;
+      if (!activeItem) return;
+      const dims = orientedDims(activeItem.source, next);
       setRotation(next);
-      setCrop({ x: 0, y: 0, w, h });
-      setOutputWidth(w);
-      setOutputHeight(h);
+      setCropFrac(FULL_FRAC);
+      setOutputWidth(dims.w);
+      setOutputHeight(dims.h);
     },
-    [loaded]
+    [activeItem]
   );
 
   const handleResetTransform = useCallback(() => {
@@ -141,14 +211,14 @@ export default function App() {
     setFlipV(false);
   }, [handleRotate]);
 
-  const handleExport = useCallback(async () => {
-    if (!loaded) return;
-    setBusy(true);
-    setStatus(null);
-    try {
+  // Single-image export
+  const exportSingle = useCallback(
+    async (item: BatchItem) => {
+      const dims = orientedDims(item.source, rotation);
+      const pixCrop = fracToRect(cropFrac, dims.w, dims.h);
       const result = await exportImage({
-        source: loaded.source,
-        crop,
+        source: item.source,
+        crop: pixCrop,
         outputWidth,
         outputHeight,
         rotation,
@@ -159,67 +229,131 @@ export default function App() {
         fit,
         bg,
       });
-      const slug = toSlug(filenameInput) || 'image';
+      const slug = toSlug(item.customFilename) || 'image';
       const filename = `${slug}.${extensionFor(result.format)}`;
-      downloadBlob(result.blob, filename);
-      const sizeKb = (result.blob.size / 1024).toFixed(1);
-      setStatus({
-        kind: result.fellBack ? 'info' : 'success',
-        message: result.fellBack
-          ? `Saved ${filename} · ${sizeKb} KB · AVIF unsupported, used WebP`
-          : `Saved ${filename} · ${sizeKb} KB`,
-      });
-      setTimeout(() => setStatus(null), 4000);
+      return { filename, blob: result.blob, fellBack: result.fellBack };
+    },
+    [cropFrac, outputWidth, outputHeight, rotation, flipH, flipV, format, quality, fit, bg]
+  );
+
+  const handleExport = useCallback(async () => {
+    if (batch.length === 0) return;
+    setBusy(true);
+    setStatus(null);
+    try {
+      if (batch.length === 1) {
+        const out = await exportSingle(batch[0]);
+        downloadBlob(out.blob, out.filename);
+        const sizeKb = (out.blob.size / 1024).toFixed(1);
+        setStatus({
+          kind: out.fellBack ? 'info' : 'success',
+          message: out.fellBack
+            ? `Saved ${out.filename} · ${sizeKb} KB · AVIF unsupported, used WebP`
+            : `Saved ${out.filename} · ${sizeKb} KB`,
+        });
+      } else {
+        // Batch: package as ZIP
+        const zip = new JSZip();
+        let fellBackAny = false;
+        const usedNames = new Set<string>();
+        for (const item of batch) {
+          const out = await exportSingle(item);
+          if (out.fellBack) fellBackAny = true;
+          // Disambiguate duplicate filenames
+          let name = out.filename;
+          if (usedNames.has(name)) {
+            const dot = name.lastIndexOf('.');
+            const base = name.slice(0, dot);
+            const ext = name.slice(dot);
+            let n = 2;
+            while (usedNames.has(`${base}-${n}${ext}`)) n++;
+            name = `${base}-${n}${ext}`;
+          }
+          usedNames.add(name);
+          zip.file(name, out.blob);
+        }
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const stamp = new Date().toISOString().slice(0, 10);
+        downloadBlob(blob, `webimg-batch-${stamp}.zip`);
+        const sizeKb = (blob.size / 1024).toFixed(1);
+        setStatus({
+          kind: fellBackAny ? 'info' : 'success',
+          message: fellBackAny
+            ? `Exported ${batch.length} images · ${sizeKb} KB · AVIF→WebP fallback used`
+            : `Exported ${batch.length} images · ${sizeKb} KB`,
+        });
+      }
+      setTimeout(() => setStatus(null), 5000);
     } catch (e) {
       setStatus({ kind: 'error', message: `Export failed: ${(e as Error).message}` });
     } finally {
       setBusy(false);
     }
-  }, [loaded, crop, outputWidth, outputHeight, rotation, flipH, flipV, format, quality, fit, bg, filenameInput]);
+  }, [batch, exportSingle]);
 
-  const handleLoadNew = useCallback(() => {
-    setLoaded(null);
+  const handleClearAll = useCallback(() => {
+    setBatch([]);
+    setActiveId(null);
     setStatus(null);
   }, []);
 
   const sourceDims = useMemo(() => {
-    if (!loaded) return { w: null as number | null, h: null as number | null };
-    const swapped = rotation === 90 || rotation === 270;
-    return {
-      w: swapped ? loaded.source.naturalHeight : loaded.source.naturalWidth,
-      h: swapped ? loaded.source.naturalWidth : loaded.source.naturalHeight,
-    };
-  }, [loaded, rotation]);
+    if (!activeItem) return { w: null as number | null, h: null as number | null };
+    const d = orientedDims(activeItem.source, rotation);
+    return { w: d.w, h: d.h };
+  }, [activeItem, rotation]);
+
+  const isBatch = batch.length > 1;
+  const headerFilename = isBatch
+    ? `${batch.length} images`
+    : activeItem?.originalFilename ?? null;
 
   return (
     <div className="app">
       <div className="app__bg" aria-hidden />
       <TopBar
-        filename={loaded?.filename ?? null}
-        width={sourceDims.w}
-        height={sourceDims.h}
+        filename={headerFilename}
+        width={isBatch ? null : sourceDims.w}
+        height={isBatch ? null : sourceDims.h}
         theme={theme}
         onToggleTheme={toggleTheme}
-        onLoadNew={loaded ? handleLoadNew : undefined}
+        onLoadNew={batch.length > 0 ? handleClearAll : undefined}
       />
 
-      {!loaded ? (
+      {/* Hidden input used by "Add more" button */}
+      <input
+        ref={dropAddRef}
+        type="file"
+        accept="image/*"
+        multiple
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          if (e.target.files) {
+            handleFiles(Array.from(e.target.files));
+            e.target.value = '';
+          }
+        }}
+      />
+
+      {batch.length === 0 ? (
         <main className="stage stage--empty">
-          <DropZone onFile={handleFile} />
+          <DropZone onFiles={handleFiles} />
         </main>
       ) : (
-        <main className="stage">
-          <Editor
-            ref={editorRef}
-            source={loaded.source}
-            rotation={rotation}
-            flipH={flipH}
-            flipV={flipV}
-            crop={crop}
-            theme={theme}
-            onCropChange={handleCropChange}
-            onZoomChange={setZoom}
-          />
+        <main className={`stage${isBatch ? ' stage--batch' : ''}`}>
+          {activeItem && (
+            <Editor
+              ref={editorRef}
+              source={activeItem.source}
+              rotation={rotation}
+              flipH={flipH}
+              flipV={flipV}
+              crop={cropRect}
+              theme={theme}
+              onCropChange={handleCropChange}
+              onZoomChange={setZoom}
+            />
+          )}
 
           <Toolbar
             rotation={rotation}
@@ -239,36 +373,51 @@ export default function App() {
             onActualSize={() => editorRef.current?.actualSize()}
           />
 
-          <Inspector
-            source={loaded.source}
-            crop={crop}
-            rotation={rotation}
-            flipH={flipH}
-            flipV={flipV}
-            outputWidth={outputWidth}
-            outputHeight={outputHeight}
-            aspectLocked={aspectLocked}
-            fit={fit}
-            bg={bg}
-            customColor={customColor}
-            format={format}
-            quality={quality}
-            filenameInput={filenameInput}
-            cropAspect={cropAspect}
-            busy={busy}
-            theme={theme}
-            onWidthChange={handleWidthChange}
-            onHeightChange={handleHeightChange}
-            onAspectLockedChange={setAspectLocked}
-            onResetCrop={handleResetCrop}
-            onFitChange={setFit}
-            onBgChange={setBg}
-            onCustomColorChange={setCustomColor}
-            onFormatChange={setFormat}
-            onQualityChange={setQuality}
-            onFilenameChange={setFilenameInput}
-            onExport={handleExport}
-          />
+          {isBatch && (
+            <BatchSidebar
+              items={batch}
+              activeId={activeId}
+              onSelect={handleSelectItem}
+              onRename={handleRenameItem}
+              onRemove={handleRemoveItem}
+              onAdd={handleAddMore}
+            />
+          )}
+
+          {activeItem && (
+            <Inspector
+              source={activeItem.source}
+              crop={cropRect}
+              rotation={rotation}
+              flipH={flipH}
+              flipV={flipV}
+              outputWidth={outputWidth}
+              outputHeight={outputHeight}
+              aspectLocked={aspectLocked}
+              fit={fit}
+              bg={bg}
+              customColor={customColor}
+              format={format}
+              quality={quality}
+              filenameInput={activeItem.customFilename}
+              cropAspect={cropAspect}
+              busy={busy}
+              theme={theme}
+              isBatch={isBatch}
+              batchCount={batch.length}
+              onWidthChange={handleWidthChange}
+              onHeightChange={handleHeightChange}
+              onAspectLockedChange={setAspectLocked}
+              onResetCrop={handleResetCrop}
+              onFitChange={setFit}
+              onBgChange={setBg}
+              onCustomColorChange={setCustomColor}
+              onFormatChange={setFormat}
+              onQualityChange={setQuality}
+              onFilenameChange={(name) => handleRenameItem(activeItem.id, name)}
+              onExport={handleExport}
+            />
+          )}
         </main>
       )}
 

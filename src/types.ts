@@ -17,6 +17,22 @@ export interface CropRect {
   h: number;
 }
 
+/** Crop expressed as fractions 0..1 of the source image dimensions. */
+export interface CropFrac {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+export interface BatchItem {
+  id: string;
+  source: HTMLImageElement;
+  originalFilename: string;
+  customFilename: string;
+  thumbnailUrl: string;
+}
+
 export interface EditorState {
   source: HTMLImageElement;
   sourceFilename: string;
