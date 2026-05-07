@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .plate { fill: #fafafa; }
+    .mark { fill: #0a0a0c; }
+    .mark-stroke { stroke: #0a0a0c; fill: none; stroke-width: 7; stroke-linecap: square; stroke-linejoin: bevel; }
+    @media (prefers-color-scheme: dark) {
+      .plate { fill: #0a0a0c; }
+      .mark { fill: #fafafa; }
+      .mark-stroke { stroke: #fafafa; }
+    }
+  </style>
+  <rect class="plate" width="64" height="64" rx="14.336" />
+  <path class="mark-stroke" d="M 8 20 L 17 44 L 25 30 L 33 44 L 42 20" />
+  <rect class="mark" x="49" y="20" width="7" height="24" />
+  <rect class="mark" x="46" y="20" width="13" height="3" />
+  <rect class="mark" x="46" y="41" width="13" height="3" />
+</svg>
