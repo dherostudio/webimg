@@ -2,12 +2,82 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Primary Meta Tags -->
+    <title>webimg — Local image editor for developers</title>
+    <meta name="title" content="webimg — Local image editor for developers" />
+    <meta name="description" content="Browser-based image editor for devs. Crop, resize, rotate, convert to JPEG, PNG, WebP, or AVIF, and batch-export with SEO-friendly slug filenames. Files never leave your browser." />
+    <meta name="keywords" content="image editor, image cropper, image resizer, batch image processing, format converter, webp converter, avif converter, og image generator, srcset generator, browser image tool, client-side image editor" />
+    <meta name="author" content="webimg" />
+    <meta name="robots" content="index, follow" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://webimg.netlify.app/" />
+
+    <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
-    <title>webimg — image tool for devs</title>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://webimg.netlify.app/" />
+    <meta property="og:site_name" content="webimg" />
+    <meta property="og:title" content="webimg — Local image editor for developers" />
+    <meta property="og:description" content="Browser-based image editor for devs. Crop, resize, rotate, convert to JPEG/PNG/WebP/AVIF, and batch-export with SEO-friendly slug filenames. No upload required." />
+    <meta property="og:image" content="https://webimg.netlify.app/og-image.png" />
+    <meta property="og:image:secure_url" content="https://webimg.netlify.app/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="webimg — Local image editor for developers. Crop, resize, convert, batch." />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://webimg.netlify.app/" />
+    <meta name="twitter:title" content="webimg — Local image editor for developers" />
+    <meta name="twitter:description" content="Browser-based image editor for devs. Crop, resize, rotate, convert to JPEG/PNG/WebP/AVIF, and batch-export with SEO-friendly slug filenames. No upload required." />
+    <meta name="twitter:image" content="https://webimg.netlify.app/og-image.png" />
+    <meta name="twitter:image:alt" content="webimg — Local image editor for developers" />
+
+    <!-- Structured Data (WebApplication schema for rich results) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "webimg",
+        "url": "https://webimg.netlify.app/",
+        "description": "Browser-based image editor for developers. Crop, resize, rotate, convert image formats (JPEG/PNG/WebP/AVIF), and batch-export with SEO-friendly slug filenames. All processing runs client-side — files never leave the browser.",
+        "applicationCategory": "DesignApplication",
+        "applicationSubCategory": "ImageEditor",
+        "operatingSystem": "Any (modern browser)",
+        "browserRequirements": "Requires JavaScript and Canvas API support",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Crop with corner-handle drag and rule-of-thirds guides",
+          "Resize to any dimensions with optional aspect lock",
+          "Rotate 90 degrees, flip horizontal and vertical",
+          "Convert to JPEG, PNG, WebP, or AVIF",
+          "Quality slider with live size estimate",
+          "Fit modes: contain, cover, stretch with custom background color",
+          "Batch processing with per-image filenames and ZIP export",
+          "SEO-friendly slug filenames with diacritics handling",
+          "Light and dark themes",
+          "100% client-side — no upload, no signup, no tracking"
+        ]
+      }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
