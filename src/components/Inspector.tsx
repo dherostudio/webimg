@@ -68,7 +68,7 @@ export function Inspector(props: Props) {
             <button
               className={`link-btn${props.aspectLocked ? ' link-btn--on' : ''}`}
               onClick={() => props.onAspectLockedChange(!props.aspectLocked)}
-              title={props.aspectLocked ? 'Aspect locked to crop' : 'Aspect unlocked — image will be contained'}
+              title={props.aspectLocked ? 'Aspect locked to crop' : 'Aspect unlocked, image will be contained'}
               aria-label="Toggle aspect ratio lock"
             >
               {props.aspectLocked ? <LinkIcon /> : <UnlinkIcon />}
@@ -146,7 +146,7 @@ export function Inspector(props: Props) {
             <p className="caveat">AVIF needs Chrome / Safari · falls back to WebP elsewhere</p>
           )}
           {transparentDisabled && props.bg === 'transparent' && showBgControls && (
-            <p className="caveat">JPEG can't be transparent — using white background</p>
+            <p className="caveat">JPEG can't be transparent, using white background</p>
           )}
         </Group>
 
@@ -303,7 +303,7 @@ function BackgroundPicker({
           <button
             className={`bg-swatch bg-swatch--custom${customActive && bg !== 'transparent' && !PRESETS.slice(1).some((p) => p.value === bg) ? ' bg-swatch--on' : ''}`}
             onClick={activateCustom}
-            title="Custom color — click to open color picker"
+            title="Custom color, click to open color picker"
             aria-label="Custom color"
             style={{ background: customColor }}
           />

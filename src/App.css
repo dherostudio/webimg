@@ -10,6 +10,24 @@
   background: var(--bg);
 }
 
+/* Landing mode: the empty state becomes a scrolling marketing page.
+   The atmosphere and top bar are pinned to the viewport while content scrolls. */
+.app--landing {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .app--landing {
+    scroll-behavior: smooth;
+  }
+}
+
+.app--landing .app__bg,
+.app--landing .topbar {
+  position: fixed;
+}
+
 /* Subtle atmospheric backdrop */
 .app__bg {
   position: absolute;
@@ -63,7 +81,7 @@
   animation: float-in 480ms var(--ease-apple) both;
 }
 
-/* App icon — squircle plate that blends with the active theme */
+/* App icon — CSS squircle plate that blends with the active theme */
 .app-icon {
   position: relative;
   display: inline-flex;
@@ -99,20 +117,18 @@
 }
 
 .app-icon__glyph {
-  width: 58%;
-  height: 58%;
+  width: 62%;
+  height: auto;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
   display: block;
-  /* Dark mode: light mark, subtle dark inset */
   filter: drop-shadow(0 0.5px 0 rgba(0, 0, 0, 0.4));
 }
 
 [data-theme='light'] .app-icon__glyph {
-  /* Light mode: dark mark, subtle light inset */
   filter: drop-shadow(0 0.5px 0 rgba(255, 255, 255, 0.5));
 }
 
@@ -187,10 +203,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.stage--empty {
-  padding: 40px;
 }
 
 /* ---------- DROP ZONE ---------- */

@@ -9,14 +9,23 @@ interface Props {
   theme: Theme;
   onToggleTheme: () => void;
   onLoadNew?: () => void;
+  onHome: () => void;
 }
 
-export function TopBar({ filename, width, height, theme, onToggleTheme, onLoadNew }: Props) {
+export function TopBar({
+  filename,
+  width,
+  height,
+  theme,
+  onToggleTheme,
+  onLoadNew,
+  onHome,
+}: Props) {
   return (
     <header className="topbar">
-      <div className="brand">
-        <AppIcon size={32} />
-      </div>
+      <button className="brand" type="button" onClick={onHome} aria-label="Home">
+        <AppIcon size={40} />
+      </button>
 
       <div className="topbar__right">
         {filename && (

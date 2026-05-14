@@ -1,9 +1,9 @@
 import JSZip from 'jszip';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { BatchSidebar } from './components/BatchSidebar';
-import { DropZone } from './components/DropZone';
 import { Editor, type EditorHandle } from './components/Editor';
 import { Inspector } from './components/Inspector';
+import { Landing } from './components/Landing';
 import { Toolbar } from './components/Toolbar';
 import { TopBar } from './components/TopBar';
 import { ZoomHud } from './components/ZoomHud';
@@ -297,6 +297,10 @@ export default function App() {
     setStatus(null);
   }, []);
 
+  const handleHome = useCallback(() => {
+    document.querySelector('.app--landing')?.scrollTo({ top: 0 });
+  }, []);
+
   const sourceDims = useMemo(() => {
     if (!activeItem) return { w: null as number | null, h: null as number | null };
     const d = orientedDims(activeItem.source, rotation);
@@ -309,7 +313,7 @@ export default function App() {
     : activeItem?.originalFilename ?? null;
 
   return (
-    <div className="app">
+    <div className={`app${batch.length === 0 ? ' app--landing' : ''}`}>
       <div className="app__bg" aria-hidden />
       <TopBar
         filename={headerFilename}
@@ -318,6 +322,7 @@ export default function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onLoadNew={batch.length > 0 ? handleClearAll : undefined}
+        onHome={batch.length === 0 ? handleHome : handleClearAll}
       />
 
       {/* Hidden input used by "Add more" button */}
@@ -336,9 +341,7 @@ export default function App() {
       />
 
       {batch.length === 0 ? (
-        <main className="stage stage--empty">
-          <DropZone onFiles={handleFiles} />
-        </main>
+        <Landing onFiles={handleFiles} />
       ) : (
         <main className={`stage${isBatch ? ' stage--batch' : ''}`}>
           {activeItem && (

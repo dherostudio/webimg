@@ -1,0 +1,581 @@
+/* ----------------------------------------------------------------
+   Landing — scrolling marketing page shown when no images are loaded
+   ---------------------------------------------------------------- */
+
+.landing {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  padding: 0 24px;
+}
+
+.landing__section {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 76px 0;
+  scroll-margin-top: 88px;
+}
+
+/* ---------- HERO ---------- */
+
+.landing__hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 22px;
+  padding: 120px 0 88px;
+}
+
+/* Dot-grid backdrop, full-bleed behind the hero, faded out with a radial mask */
+.landing__hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: -1;
+  width: 100vw;
+  transform: translateX(-50%);
+  pointer-events: none;
+  --hero-dot: rgba(255, 255, 255, 0.18);
+  background-image: radial-gradient(var(--hero-dot) 1px, transparent 1px);
+  background-size: 16px 16px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 42%, #000, transparent 78%);
+          mask-image: radial-gradient(ellipse 70% 55% at 50% 42%, #000, transparent 78%);
+}
+
+[data-theme='light'] .landing__hero::before {
+  --hero-dot: rgba(0, 0, 0, 0.16);
+}
+
+.landing__title {
+  margin: 0;
+  font-size: clamp(34px, 6vw, 58px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  color: var(--text);
+  animation: float-in 560ms var(--ease-apple) both;
+}
+
+.landing__subtitle {
+  margin: 0;
+  max-width: 520px;
+  font-size: clamp(15px, 2.2vw, 18px);
+  line-height: 1.5;
+  color: var(--text-2);
+  animation: float-in 560ms var(--ease-apple) 80ms both;
+}
+
+.landing__trust {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  animation: float-in 560ms var(--ease-apple) 240ms both;
+}
+
+/* ---------- SECTION HEADINGS ---------- */
+
+.landing__section-head {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.landing__eyebrow {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+
+.landing__section-title {
+  margin: 0;
+  font-size: clamp(24px, 3.4vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--text);
+}
+
+.landing__section-lead {
+  max-width: 560px;
+  margin: 14px auto 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+/* ---------- FEATURE GRID + STEPS ---------- */
+
+.landing__feature-grid,
+.landing__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.feature-card,
+.step-card {
+  padding: 26px 24px;
+  border-radius: var(--r-panel);
+  text-align: left;
+}
+
+.feature-card__icon,
+.step-card__icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--text);
+  box-shadow: inset 0 0 0 0.5px var(--hairline-strong);
+}
+
+.feature-card__title,
+.step-card__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.feature-card__desc,
+.step-card__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+/* ---------- WHY GRID ---------- */
+
+.landing__why-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.why-point {
+  display: flex;
+  gap: 14px;
+  padding: 22px 24px;
+  border-radius: var(--r-panel);
+}
+
+.why-point__icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--text);
+  box-shadow: inset 0 0 0 0.5px var(--hairline-strong);
+}
+
+.why-point__title {
+  margin: 0 0 5px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.why-point__desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+/* ---------- MAGIC CARD HOVER ---------- */
+/* Cursor-tracked spotlight + border glow, adapted from Magic UI's MagicCard.
+   Kept monochrome to match the design system. --mx / --my are set in JS. */
+
+.magic-card {
+  --mx: 50%;
+  --my: 50%;
+  --magic-size: 240px;
+  --magic-glow: rgba(255, 255, 255, 0.06);
+  --magic-border: rgba(255, 255, 255, 0.5);
+  position: relative;
+  isolation: isolate;
+}
+
+[data-theme='light'] .magic-card {
+  --magic-glow: rgba(0, 0, 0, 0.045);
+  --magic-border: rgba(0, 0, 0, 0.42);
+}
+
+/* Spotlight fill that follows the cursor */
+.magic-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms var(--ease-snap);
+  background: radial-gradient(
+    var(--magic-size) circle at var(--mx) var(--my),
+    var(--magic-glow),
+    transparent 65%
+  );
+}
+
+/* Border glow — same gradient, masked down to a 1px ring */
+.magic-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms var(--ease-snap);
+  background: radial-gradient(
+    var(--magic-size) circle at var(--mx) var(--my),
+    var(--magic-border),
+    transparent 65%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+
+.magic-card:hover::before,
+.magic-card:hover::after {
+  opacity: 1;
+}
+
+/* Keep card content above the spotlight fill */
+.magic-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- FAQ ---------- */
+
+.landing__faq-list {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faq-item {
+  border-radius: var(--r-control);
+}
+
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '';
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--text-3);
+  border-bottom: 1.5px solid var(--text-3);
+  transform: rotate(45deg);
+  transition: transform 220ms var(--ease-apple);
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+/* Smooth open/close: author CSS overrides the UA hidden state, so the
+   [open] attribute just drives a grid-row height transition. No JS. */
+.faq-item__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 320ms var(--ease-apple);
+}
+
+.faq-item[open] .faq-item__content {
+  grid-template-rows: 1fr;
+}
+
+.faq-item__inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.faq-item__body {
+  margin: 0;
+  padding: 0 20px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+  opacity: 0;
+  transition: opacity 200ms var(--ease-snap);
+}
+
+.faq-item[open] .faq-item__body {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item__content,
+  .faq-item__body {
+    transition: none;
+  }
+}
+
+/* ---------- FOOTER ---------- */
+
+/* Full-bleed: break out of .landing's 24px padding so the card sits at
+   16px gutters, matching the fixed top bar. */
+.landing__footer {
+  position: relative;
+  margin: 0 -24px;
+  padding: 24px 16px 0;
+  overflow: hidden;
+}
+
+.footer-card {
+  position: relative;
+  z-index: 1;
+  padding: 40px 40px 24px;
+  border-radius: var(--r-panel);
+}
+
+.footer-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.footer-brand {
+  max-width: 480px;
+  min-width: 240px;
+}
+
+.footer-brand__id {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-brand__name {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.footer-brand__desc {
+  margin: 16px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+.footer-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
+  transition: color 120ms var(--ease-snap), transform 200ms var(--ease-apple);
+}
+
+.footer-social:hover {
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.footer-nav {
+  display: flex;
+  gap: 56px;
+  flex-wrap: wrap;
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-col__title {
+  margin: 0 0 2px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+.footer-link {
+  width: fit-content;
+  font-size: 13px;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color 120ms var(--ease-snap);
+}
+
+.footer-link:hover {
+  color: var(--text);
+}
+
+.footer-card__divider {
+  height: 0.5px;
+  margin: 32px 0 20px;
+  background: var(--hairline);
+}
+
+.footer-card__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-copyright {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* Oversized ghosted wordmark below the footer card, in normal flow with a
+   gap above it, clipped to a band by its own height + the page bottom.
+   Cursor-tracked glow (--mx / --my set on footer mousemove), clipped to text. */
+.footer-wordmark {
+  --mx: 50%;
+  --my: 50%;
+  --wordmark-base: rgba(255, 255, 255, 0.05);
+  --wordmark-glow: rgba(255, 255, 255, 0.28);
+  margin-top: 16px;
+  height: 0.62em;
+  overflow: hidden;
+  font-size: clamp(96px, 24vw, 400px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  color: transparent;
+  background: radial-gradient(
+    clamp(260px, 38vw, 520px) circle at var(--mx) var(--my),
+    var(--wordmark-glow),
+    var(--wordmark-base) 70%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme='light'] .footer-wordmark {
+  --wordmark-base: rgba(0, 0, 0, 0.05);
+  --wordmark-glow: rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- SCROLL REVEAL ---------- */
+/* Subtle entrance transitions driven purely by scroll position.
+   CSS-only: no JS, no observers. Each element reveals as it enters the
+   viewport. Gated so reduced-motion users and browsers without
+   scroll-driven animation support just see static content. */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .landing__section-head,
+    .feature-card,
+    .step-card,
+    .why-point,
+    .faq-item,
+    .footer-card {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 860px) {
+  .landing__feature-grid,
+  .landing__steps {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .landing {
+    padding: 0 16px;
+  }
+  .landing__footer {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+  .landing__section {
+    padding: 56px 0;
+  }
+  .landing__feature-grid,
+  .landing__steps,
+  .landing__why-grid {
+    grid-template-columns: 1fr;
+  }
+  .footer-card {
+    padding: 28px 22px 20px;
+  }
+  .footer-card__top {
+    gap: 32px;
+  }
+  .footer-nav {
+    gap: 40px;
+  }
+}

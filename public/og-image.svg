@@ -33,14 +33,17 @@
   <!-- App icon: 220x220 squircle -->
   <g transform="translate(96 205)">
     <!-- Drop shadow -->
-    <rect x="0" y="6" width="220" height="220" rx="49.28" fill="#000000" fill-opacity="0.5" filter="blur(16px)" />
+    <rect x="0" y="6" width="220" height="220" rx="34.32" fill="#000000" fill-opacity="0.5" filter="blur(16px)" />
     <!-- Plate -->
-    <rect width="220" height="220" rx="49.28" fill="url(#plate)" />
-    <rect width="220" height="220" rx="49.28" fill="url(#plateShine)" />
-    <rect width="220" height="220" rx="49.28" fill="none" stroke="#000000" stroke-opacity="0.18" stroke-width="0.5" />
-    <!-- Geometric mark, ~58% of plate (127.6px), centered -->
-    <g transform="translate(46.2 46.2) scale(0.4984)" fill="#0a0a0c">
-      <path d="M256 64V128H192.5L160 95L128 64L96 95L63.5 128H64L128 192V256H64.5L32 223L0 192V64L64 0H192L256 64ZM256 192V256H192.5L160 223L128 192V128H192L256 192Z" />
+    <rect width="220" height="220" rx="34.32" fill="url(#plate)" />
+    <rect width="220" height="220" rx="34.32" fill="url(#plateShine)" />
+    <rect width="220" height="220" rx="34.32" fill="none" stroke="#000000" stroke-opacity="0.18" stroke-width="0.5" />
+    <!-- webimg mark, positioned for the 512 squircle, scaled to 220 -->
+    <g transform="scale(0.4297)" fill="#1c1c1e">
+      <path d="M140.62 195.5H75.5106C69.535 195.5 65.6688 201.813 68.3845 207.136L168.831 404.011C171.589 409.417 179.126 409.904 182.556 404.898L221.219 348.481C222.898 346.033 223.082 342.856 221.698 340.23L147.698 199.771C146.314 197.144 143.589 195.5 140.62 195.5Z" />
+      <path d="M310.085 404.011L209.639 207.136C206.923 201.813 210.789 195.5 216.765 195.5H282.36C285.337 195.5 288.067 197.153 289.448 199.79L362.97 340.237C364.344 342.86 364.156 346.027 362.482 348.469L323.811 404.898C320.38 409.904 312.843 409.417 310.085 404.011Z" />
+      <path d="M436.454 195.5H357.892C351.945 195.5 348.077 201.758 350.737 207.078L384.301 274.206C387.044 279.692 394.686 280.177 398.101 275.083L443.099 207.954C446.662 202.639 442.853 195.5 436.454 195.5Z" />
+      <path d="M299 126C299 149.748 279.748 169 256 169C232.252 169 213 149.748 213 126C213 102.252 232.252 83 256 83C279.748 83 299 102.252 299 126Z" />
     </g>
   </g>
 
@@ -70,7 +73,7 @@
       font-weight="400"
       fill="#a1a1a6"
       letter-spacing="-0.4"
-    >Image editor for developers</text>
+    >Free, private image editor</text>
 
     <!-- Feature pills -->
     <g transform="translate(4 432)">
