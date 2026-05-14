@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <defs>
-    <radialGradient id="glow" cx="20%" cy="0%" r="80%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.06" />
-      <stop offset="60%" stop-color="#ffffff" stop-opacity="0" />
+    <radialGradient id="glow" cx="50%" cy="0%" r="75%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.07" />
+      <stop offset="65%" stop-color="#ffffff" stop-opacity="0" />
     </radialGradient>
     <radialGradient id="glow2" cx="100%" cy="100%" r="60%">
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.03" />
@@ -16,8 +16,8 @@
       <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45" />
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>
-    <pattern id="dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="1" fill="#ffffff" fill-opacity="0.04" />
+    <pattern id="dots" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#ffffff" fill-opacity="0.1" />
     </pattern>
   </defs>
 
@@ -30,104 +30,62 @@
   <!-- Hairline border inset -->
   <rect x="0.5" y="0.5" width="1199" height="629" fill="none" stroke="#1a1a1e" stroke-width="1" />
 
-  <!-- App icon: 220x220 squircle -->
-  <g transform="translate(96 205)">
-    <!-- Drop shadow -->
-    <rect x="0" y="6" width="220" height="220" rx="34.32" fill="#000000" fill-opacity="0.5" filter="blur(16px)" />
-    <!-- Plate -->
-    <rect width="220" height="220" rx="34.32" fill="url(#plate)" />
-    <rect width="220" height="220" rx="34.32" fill="url(#plateShine)" />
-    <rect width="220" height="220" rx="34.32" fill="none" stroke="#000000" stroke-opacity="0.18" stroke-width="0.5" />
-    <!-- webimg mark, positioned for the 512 squircle, scaled to 220 -->
-    <g transform="scale(0.4297)" fill="#1c1c1e">
+  <!-- Logo + wordmark lockup, horizontally centered -->
+  <g transform="translate(476 140)">
+    <!-- 72x72 squircle app icon -->
+    <rect x="0" y="3" width="72" height="72" rx="11.25" fill="#000000" fill-opacity="0.5" filter="blur(8px)" />
+    <rect width="72" height="72" rx="11.25" fill="url(#plate)" />
+    <rect width="72" height="72" rx="11.25" fill="url(#plateShine)" />
+    <rect width="72" height="72" rx="11.25" fill="none" stroke="#000000" stroke-opacity="0.18" stroke-width="0.5" />
+    <!-- webimg mark, positioned for the 512 squircle, scaled to 72 -->
+    <g transform="scale(0.140625)" fill="#1c1c1e">
       <path d="M140.62 195.5H75.5106C69.535 195.5 65.6688 201.813 68.3845 207.136L168.831 404.011C171.589 409.417 179.126 409.904 182.556 404.898L221.219 348.481C222.898 346.033 223.082 342.856 221.698 340.23L147.698 199.771C146.314 197.144 143.589 195.5 140.62 195.5Z" />
       <path d="M310.085 404.011L209.639 207.136C206.923 201.813 210.789 195.5 216.765 195.5H282.36C285.337 195.5 288.067 197.153 289.448 199.79L362.97 340.237C364.344 342.86 364.156 346.027 362.482 348.469L323.811 404.898C320.38 409.904 312.843 409.417 310.085 404.011Z" />
       <path d="M436.454 195.5H357.892C351.945 195.5 348.077 201.758 350.737 207.078L384.301 274.206C387.044 279.692 394.686 280.177 398.101 275.083L443.099 207.954C446.662 202.639 442.853 195.5 436.454 195.5Z" />
       <path d="M299 126C299 149.748 279.748 169 256 169C232.252 169 213 149.748 213 126C213 102.252 232.252 83 256 83C279.748 83 299 102.252 299 126Z" />
     </g>
-  </g>
-
-  <!-- Wordmark + tagline + features -->
-  <g transform="translate(376 0)">
-    <!-- "webimg" wordmark, custom letterforms wouldn't render reliably without fonts,
-         so we use bold system font; resvg falls back gracefully -->
+    <!-- "webimg" wordmark in monospace -->
     <text
-      x="0"
-      y="298"
-      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
-      font-size="124"
-      font-weight="700"
-      fill="#fafafa"
-      letter-spacing="-5"
-    >webimg</text>
-
-    <!-- Hairline accent -->
-    <rect x="4" y="328" width="56" height="3" fill="#3a3a40" />
-
-    <!-- Tagline -->
-    <text
-      x="4"
-      y="392"
-      font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
-      font-size="34"
-      font-weight="400"
-      fill="#a1a1a6"
-      letter-spacing="-0.4"
-    >Free, private image editor</text>
-
-    <!-- Feature pills -->
-    <g transform="translate(4 432)">
-      <!-- Pill: Crop -->
-      <g transform="translate(0 0)">
-        <rect width="92" height="36" rx="18" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.09" stroke-width="0.5" />
-        <text x="46" y="24" font-family="-apple-system, system-ui, sans-serif" font-size="15" font-weight="500" fill="#a1a1a6" text-anchor="middle">Crop</text>
-      </g>
-      <g transform="translate(102 0)">
-        <rect width="98" height="36" rx="18" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.09" stroke-width="0.5" />
-        <text x="49" y="24" font-family="-apple-system, system-ui, sans-serif" font-size="15" font-weight="500" fill="#a1a1a6" text-anchor="middle">Resize</text>
-      </g>
-      <g transform="translate(210 0)">
-        <rect width="108" height="36" rx="18" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.09" stroke-width="0.5" />
-        <text x="54" y="24" font-family="-apple-system, system-ui, sans-serif" font-size="15" font-weight="500" fill="#a1a1a6" text-anchor="middle">Convert</text>
-      </g>
-      <g transform="translate(328 0)">
-        <rect width="92" height="36" rx="18" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.09" stroke-width="0.5" />
-        <text x="46" y="24" font-family="-apple-system, system-ui, sans-serif" font-size="15" font-weight="500" fill="#a1a1a6" text-anchor="middle">Batch</text>
-      </g>
-    </g>
-  </g>
-
-  <!-- Bottom-right footer -->
-  <g transform="translate(1104 580)">
-    <text
-      x="0"
-      y="0"
+      x="90"
+      y="50"
       font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
-      font-size="14"
+      font-size="44"
       font-weight="500"
-      fill="#6e6e73"
-      text-anchor="end"
-      letter-spacing="2"
-    >LOCAL · CLIENT-SIDE · NO UPLOAD</text>
+      fill="#fafafa"
+    >webimg</text>
   </g>
 
-  <!-- Top-right small format chips -->
-  <g transform="translate(1104 64)" text-anchor="end">
-    <g transform="translate(-280 0)">
-      <rect width="56" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" />
-      <text x="28" y="15" font-family="ui-monospace, monospace" font-size="11" font-weight="500" fill="#8a8a90" text-anchor="middle" letter-spacing="0.5">JPEG</text>
-    </g>
-    <g transform="translate(-216 0)">
-      <rect width="50" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" />
-      <text x="25" y="15" font-family="ui-monospace, monospace" font-size="11" font-weight="500" fill="#8a8a90" text-anchor="middle" letter-spacing="0.5">PNG</text>
-    </g>
-    <g transform="translate(-158 0)">
-      <rect width="58" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" />
-      <text x="29" y="15" font-family="ui-monospace, monospace" font-size="11" font-weight="500" fill="#8a8a90" text-anchor="middle" letter-spacing="0.5">WebP</text>
-    </g>
-    <g transform="translate(-92 0)">
-      <rect width="56" height="22" rx="11" fill="#ffffff" fill-opacity="0.05" />
-      <text x="28" y="15" font-family="ui-monospace, monospace" font-size="11" font-weight="500" fill="#8a8a90" text-anchor="middle" letter-spacing="0.5">AVIF</text>
-    </g>
-  </g>
+  <!-- Headline, from the hero -->
+  <text
+    x="600"
+    y="320"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+    font-size="48"
+    font-weight="700"
+    fill="#fafafa"
+    text-anchor="middle"
+    letter-spacing="-1"
+  >Crop, resize, convert, and compress</text>
+  <text
+    x="600"
+    y="378"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+    font-size="48"
+    font-weight="700"
+    fill="#fafafa"
+    text-anchor="middle"
+    letter-spacing="-1"
+  >images in your browser</text>
+
+  <!-- Trust line, from the hero -->
+  <text
+    x="600"
+    y="478"
+    font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    font-size="16"
+    font-weight="500"
+    fill="#8a8a90"
+    text-anchor="middle"
+    letter-spacing="1.5"
+  >FREE · NO SIGN-UP · NOTHING UPLOADED · NO WATERMARKS</text>
 </svg>
