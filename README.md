@@ -68,3 +68,24 @@ npm run gen:og
 ## Contributing
 
 Issues and pull requests are welcome at https://github.com/dherostudio/webimg.
+
+## License
+
+The webimg source code is released under the [MIT License](LICENSE) © dhero.studio.
+
+### Credits & licensing of third-party assets
+
+The MIT license covers webimg's own source code only. It does **not** cover the
+following third-party assets, which are licensed separately and are **not**
+redistributable under MIT:
+
+- **Animated icons** (`public/icons/*.json`) — Lottie animations from
+  [Flaticon](https://www.flaticon.com/), used under a Flaticon license. They
+  remain the property of Flaticon and its authors. Do not reuse, redistribute,
+  or extract these files outside this project; obtain your own license from
+  Flaticon if you need them.
+
+Fonts are loaded at runtime from Google Fonts and are not bundled in this
+repository: [Manrope](https://github.com/sharanda/manrope) and
+[JetBrains Mono](https://github.com/JetBrains/JetBrainsMono), both under the
+[SIL Open Font License 1.1](https://openfontlicense.org/).
