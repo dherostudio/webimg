@@ -341,7 +341,7 @@ export default function App() {
       />
 
       {batch.length === 0 ? (
-        <Landing onFiles={handleFiles} />
+        <Landing onFiles={handleFiles} theme={theme} />
       ) : (
         <main className={`stage${isBatch ? ' stage--batch' : ''}`}>
           {activeItem && (

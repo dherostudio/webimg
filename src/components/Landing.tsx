@@ -1,28 +1,18 @@
-import { topCrop } from '@lucide/lab';
-import {
-  Check,
-  Download,
-  Gauge,
-  Icon,
-  Layers,
-  type LucideIcon,
-  Replace,
-  Scaling,
-  ShieldCheck,
-  SlidersHorizontal,
-  Upload,
-} from 'lucide-react';
-import { useRef, type MouseEvent, type ReactNode } from 'react';
+import { useRef, useState, type MouseEvent } from 'react';
+import type { Theme } from '../useTheme';
 import { AppIcon } from './AppIcon';
 import { DropZone } from './DropZone';
 import { GithubIcon } from './icons';
+import { LottieIcon } from './LottieIcon';
 import '../Landing.css';
 
 interface Props {
   onFiles: (files: File[]) => void;
+  theme: Theme;
 }
 
 const GITHUB_URL = 'https://github.com/dherostudio/webimg';
+const STUDIO_URL = 'https://dhero.studio';
 
 /** Tracks the cursor inside a card and exposes it to CSS as --mx / --my. */
 function handleMagicMove(e: MouseEvent<HTMLElement>) {
@@ -33,57 +23,57 @@ function handleMagicMove(e: MouseEvent<HTMLElement>) {
 }
 
 interface Feature {
-  icon: ReactNode;
+  icon: string;
   title: string;
   desc: string;
 }
 
 const FEATURES: Feature[] = [
   {
-    icon: <Icon iconNode={topCrop} size={20} />,
+    icon: '/icons/crop-straighten.json',
     title: 'Crop & straighten',
     desc: 'Crop to any aspect ratio with drag handles and rule-of-thirds guides. Rotate in 90° steps and flip horizontally or vertically.',
   },
   {
-    icon: <Scaling size={20} />,
+    icon: '/icons/resize-to-exact-dimensions.json',
     title: 'Resize to exact dimensions',
     desc: 'Set a precise pixel width and height, with an optional aspect-ratio lock so images never look stretched or squashed.',
   },
   {
-    icon: <Replace size={20} />,
+    icon: '/icons/convert.json',
     title: 'Convert WebP, AVIF, PNG & JPEG',
     desc: 'Convert images between modern and classic formats. WebP and AVIF keep files small; PNG and JPEG keep them universal.',
   },
   {
-    icon: <Gauge size={20} />,
+    icon: '/icons/compress-live-preview.json',
     title: 'Compress with live preview',
     desc: 'Dial in quality with a slider and watch the estimated file size update instantly. Smaller images mean faster page loads.',
   },
   {
-    icon: <Layers size={20} />,
+    icon: '/icons/batch-processing.json',
     title: 'Batch processing',
     desc: 'Edit dozens of images in one session and export them all as a single ZIP, each with its own filename.',
   },
   {
-    icon: <ShieldCheck size={20} />,
+    icon: '/icons/private.json',
     title: '100% private, nothing uploaded',
     desc: 'There is no server. Every crop, resize, and conversion happens locally, so your images never leave your device.',
   },
 ];
 
-const STEPS: { icon: LucideIcon; title: string; desc: string }[] = [
+const STEPS: { icon: string; title: string; desc: string }[] = [
   {
-    icon: Upload,
+    icon: '/icons/drop-image.json',
     title: 'Drop your images',
     desc: 'Drag in one image or a whole batch, or click to browse. webimg opens JPEG, PNG, WebP, AVIF, GIF, and BMP files.',
   },
   {
-    icon: SlidersHorizontal,
+    icon: '/icons/edit-and-adjust.json',
     title: 'Edit and adjust',
     desc: 'Crop, resize, rotate, flip, pick an output format, and set the quality. The live preview updates as you work.',
   },
   {
-    icon: Download,
+    icon: '/icons/export.json',
     title: 'Export',
     desc: 'Download a single optimised image, or a ZIP of the whole batch. No sign-up, no waiting, no watermark.',
   },
@@ -151,8 +141,9 @@ const FAQS: { q: string; a: string }[] = [
   },
 ];
 
-export function Landing({ onFiles }: Props) {
+export function Landing({ onFiles, theme }: Props) {
   const wordmarkRef = useRef<HTMLDivElement>(null);
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   /** Tracks the cursor across the footer and feeds it to the wordmark glow. */
   function handleFooterGlow(e: MouseEvent<HTMLElement>) {
@@ -166,6 +157,7 @@ export function Landing({ onFiles }: Props) {
   return (
     <div className="landing">
       <section className="landing__hero">
+        <p className="landing__hero-eyebrow">Private by design</p>
         <h1 className="landing__title">
           Crop, resize, convert, and compress images in your browser
         </h1>
@@ -194,7 +186,9 @@ export function Landing({ onFiles }: Props) {
               className="feature-card glass magic-card"
               onMouseMove={handleMagicMove}
             >
-              <div className="feature-card__icon">{f.icon}</div>
+              <div className="feature-card__icon">
+                <LottieIcon src={f.icon} theme={theme} size={44} />
+              </div>
               <h3 className="feature-card__title">{f.title}</h3>
               <p className="feature-card__desc">{f.desc}</p>
             </article>
@@ -208,14 +202,14 @@ export function Landing({ onFiles }: Props) {
           <h2 className="landing__section-title">How to edit an image with webimg</h2>
         </div>
         <div className="landing__steps">
-          {STEPS.map(({ icon: StepIcon, title, desc }) => (
+          {STEPS.map(({ icon, title, desc }) => (
             <article
               key={title}
               className="step-card glass magic-card"
               onMouseMove={handleMagicMove}
             >
               <div className="step-card__icon">
-                <StepIcon size={20} />
+                <LottieIcon src={icon} theme={theme} size={44} />
               </div>
               <h3 className="step-card__title">{title}</h3>
               <p className="step-card__desc">{desc}</p>
@@ -241,7 +235,7 @@ export function Landing({ onFiles }: Props) {
               onMouseMove={handleMagicMove}
             >
               <div className="why-point__icon">
-                <Check size={16} />
+                <LottieIcon src="/icons/check-sign.json" theme={theme} size={40} />
               </div>
               <div className="why-point__body">
                 <h3 className="why-point__title">{w.title}</h3>
@@ -261,10 +255,20 @@ export function Landing({ onFiles }: Props) {
           {FAQS.map((item) => (
             <details
               key={item.q}
+              open={openFaq === item.q}
               className="faq-item glass magic-card"
               onMouseMove={handleMagicMove}
             >
-              <summary>{item.q}</summary>
+              <summary
+                onClick={(e) => {
+                  // Drive open state in React so the previously-open panel
+                  // animates closed instead of snapping shut.
+                  e.preventDefault();
+                  setOpenFaq((cur) => (cur === item.q ? null : item.q));
+                }}
+              >
+                {item.q}
+              </summary>
               <div className="faq-item__content">
                 <div className="faq-item__inner">
                   <p className="faq-item__body">{item.a}</p>
@@ -335,7 +339,20 @@ export function Landing({ onFiles }: Props) {
           <div className="footer-card__divider" />
 
           <div className="footer-card__bottom">
-            <p className="footer-copyright">© 2026 webimg. All rights reserved.</p>
+            <div className="footer-meta">
+              <p className="footer-copyright">© 2026 webimg. All rights reserved.</p>
+              <p className="footer-built">
+                Built by{' '}
+                <a
+                  className="footer-built__link"
+                  href={STUDIO_URL}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  dhero.studio
+                </a>
+              </p>
+            </div>
             <a
               className="footer-social"
               href={GITHUB_URL}
@@ -346,10 +363,10 @@ export function Landing({ onFiles }: Props) {
               <GithubIcon size={20} />
             </a>
           </div>
-        </div>
 
-        <div ref={wordmarkRef} className="footer-wordmark" aria-hidden="true">
-          webimg
+          <div ref={wordmarkRef} className="footer-wordmark" aria-hidden="true">
+            webimg
+          </div>
         </div>
       </footer>
     </div>

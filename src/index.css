@@ -110,8 +110,8 @@
 
 :root {
   /* Type */
-  --font-ui: 'Geist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-ui: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Motion */
   --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
