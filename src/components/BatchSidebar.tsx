@@ -1,6 +1,6 @@
+import { FolderPlus, Plus } from 'lucide-react';
 import type { BatchItem } from '../types';
 import { toSlug } from '../utils/slug';
-import { FolderIcon, PlusIcon } from './icons';
 
 interface Props {
   items: BatchItem[];
@@ -19,7 +19,7 @@ export function BatchSidebar({ items, activeId, onSelect, onRename, onRemove, on
           {items.length} {items.length === 1 ? 'image' : 'images'}
         </span>
         <button className="batch-sidebar__add" onClick={onAdd} title="Add images">
-          <PlusIcon size={14} />
+          <Plus size={14} />
         </button>
       </div>
 
@@ -66,7 +66,7 @@ export function BatchSidebar({ items, activeId, onSelect, onRename, onRemove, on
 
       <div className="batch-sidebar__foot">
         <button className="ghost-btn" onClick={onAdd}>
-          <FolderIcon size={14} />
+          <FolderPlus size={14} />
           <span>Add more images</span>
         </button>
       </div>

@@ -2,7 +2,6 @@ import { useRef, useState, type MouseEvent } from 'react';
 import type { Theme } from '../useTheme';
 import { AppIcon } from './AppIcon';
 import { DropZone } from './DropZone';
-import { GithubIcon } from './icons';
 import { LottieIcon } from './LottieIcon';
 import '../Landing.css';
 
@@ -339,29 +338,18 @@ export function Landing({ onFiles, theme }: Props) {
           <div className="footer-card__divider" />
 
           <div className="footer-card__bottom">
-            <div className="footer-meta">
-              <p className="footer-copyright">© 2026 webimg. All rights reserved.</p>
-              <p className="footer-built">
-                Built by{' '}
-                <a
-                  className="footer-built__link"
-                  href={STUDIO_URL}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  dhero.studio
-                </a>
-              </p>
-            </div>
-            <a
-              className="footer-social"
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label="webimg on GitHub"
-            >
-              <GithubIcon size={20} />
-            </a>
+            <p className="footer-copyright">© 2026 webimg. All rights reserved.</p>
+            <p className="footer-built">
+              Built by{' '}
+              <a
+                className="footer-built__link"
+                href={STUDIO_URL}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                dhero.studio
+              </a>
+            </p>
           </div>
 
           <div ref={wordmarkRef} className="footer-wordmark" aria-hidden="true">

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { BgColor, CropRect, FitMode, OutputFormat, Rotation } from '../types';
 import { formatHsl, formatRgb, parseColor } from '../utils/color';
 import { extensionFor, toSlug } from '../utils/slug';
-import { DownloadIcon, LinkIcon, ResetIcon, UnlinkIcon } from './icons';
+import { Download, Link2, Link2Off, RotateCcw } from 'lucide-react';
 import { PreviewTile } from './PreviewTile';
 
 interface Props {
@@ -57,7 +57,7 @@ export function Inspector(props: Props) {
           />
           <Stat label="Aspect" value={props.cropAspect.toFixed(3)} />
           <button className="ghost-btn" onClick={props.onResetCrop}>
-            <ResetIcon size={14} />
+            <RotateCcw size={14} />
             <span>Reset to full image</span>
           </button>
         </Group>
@@ -71,7 +71,7 @@ export function Inspector(props: Props) {
               title={props.aspectLocked ? 'Aspect locked to crop' : 'Aspect unlocked, image will be contained'}
               aria-label="Toggle aspect ratio lock"
             >
-              {props.aspectLocked ? <LinkIcon /> : <UnlinkIcon />}
+              {props.aspectLocked ? <Link2 size={14} /> : <Link2Off size={14} />}
             </button>
             <NumberField label="H" value={props.outputHeight} onChange={props.onHeightChange} />
           </div>
@@ -172,7 +172,7 @@ export function Inspector(props: Props) {
 
       <div className="inspector__footer">
         <button className="primary-btn" disabled={props.busy} onClick={props.onExport}>
-          <DownloadIcon />
+          <Download size={16} />
           <span>
             {props.busy
               ? 'Exporting…'

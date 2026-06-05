@@ -1,5 +1,11 @@
+import {
+  FlipHorizontal2,
+  FlipVertical2,
+  RotateCcw,
+  RotateCcwSquare,
+  RotateCwSquare,
+} from 'lucide-react';
 import type { Rotation } from '../types';
-import { FlipHIcon, FlipVIcon, ResetIcon, RotateLeftIcon, RotateRightIcon } from './icons';
 
 interface Props {
   rotation: Rotation;
@@ -26,24 +32,24 @@ export function Toolbar({
         label="Rotate left"
         onClick={() => onRotateChange(((rotation + 270) % 360) as Rotation)}
       >
-        <RotateLeftIcon />
+        <RotateCcwSquare size={16} />
       </ToolButton>
       <ToolButton
         label="Rotate right"
         onClick={() => onRotateChange(((rotation + 90) % 360) as Rotation)}
       >
-        <RotateRightIcon />
+        <RotateCwSquare size={16} />
       </ToolButton>
       <div className="toolbar__divider" />
       <ToolButton label="Flip horizontal" active={flipH} onClick={() => onFlipHChange(!flipH)}>
-        <FlipHIcon />
+        <FlipHorizontal2 size={16} />
       </ToolButton>
       <ToolButton label="Flip vertical" active={flipV} onClick={() => onFlipVChange(!flipV)}>
-        <FlipVIcon />
+        <FlipVertical2 size={16} />
       </ToolButton>
       <div className="toolbar__divider" />
       <ToolButton label="Reset transform" onClick={onResetTransform}>
-        <ResetIcon />
+        <RotateCcw size={16} />
       </ToolButton>
     </div>
   );

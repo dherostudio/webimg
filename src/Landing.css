@@ -418,19 +418,6 @@
   color: var(--text-2);
 }
 
-.footer-social {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-2);
-  transition: color 120ms var(--ease-snap), transform 200ms var(--ease-apple);
-}
-
-.footer-social:hover {
-  color: var(--text);
-  transform: translateY(-1px);
-}
-
 .footer-nav {
   display: flex;
   gap: 56px;
@@ -477,13 +464,6 @@
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-}
-
-.footer-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 14px;
 }
 
 .footer-copyright {

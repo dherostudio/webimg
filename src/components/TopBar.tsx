@@ -1,6 +1,6 @@
+import { FolderOpen, Moon, Sun } from 'lucide-react';
 import type { Theme } from '../useTheme';
 import { AppIcon } from './AppIcon';
-import { FolderIcon, MoonIcon, SunIcon } from './icons';
 
 interface Props {
   filename: string | null;
@@ -40,7 +40,7 @@ export function TopBar({
             )}
             {onLoadNew && (
               <button className="ghost-btn ghost-btn--compact" onClick={onLoadNew}>
-                <FolderIcon size={14} />
+                <FolderOpen size={14} />
                 <span>Open…</span>
               </button>
             )}
@@ -53,7 +53,7 @@ export function TopBar({
           title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           aria-label="Toggle theme"
         >
-          {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
       </div>
     </header>

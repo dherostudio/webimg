@@ -1,5 +1,5 @@
+import { Plus } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { PlusIcon } from './icons';
 
 interface Props {
   onFiles: (files: File[]) => void;
@@ -44,7 +44,7 @@ export function DropZone({ onFiles }: Props) {
       />
       <div className="dropzone__plate glass">
         <div className="dropzone__icon">
-          <PlusIcon size={28} />
+          <Plus size={28} />
         </div>
         <h2>Drop one or more images</h2>
         <p>or click to choose files</p>

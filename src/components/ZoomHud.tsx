@@ -1,4 +1,4 @@
-import { FitIcon, ZoomInIcon, ZoomOutIcon } from './icons';
+import { Maximize, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface Props {
   zoom: number;
@@ -13,7 +13,7 @@ export function ZoomHud({ zoom, onZoomIn, onZoomOut, onFit, onActualSize }: Prop
   return (
     <div className="zoom-hud glass">
       <button className="hud-btn" onClick={onZoomOut} title="Zoom out" aria-label="Zoom out">
-        <ZoomOutIcon />
+        <ZoomOut size={16} />
       </button>
       <button
         className="zoom-hud__pct"
@@ -23,11 +23,11 @@ export function ZoomHud({ zoom, onZoomIn, onZoomOut, onFit, onActualSize }: Prop
         {pct}%
       </button>
       <button className="hud-btn" onClick={onZoomIn} title="Zoom in" aria-label="Zoom in">
-        <ZoomInIcon />
+        <ZoomIn size={16} />
       </button>
       <div className="zoom-hud__divider" />
       <button className="hud-btn hud-btn--text" onClick={onFit} title="Fit to view">
-        <FitIcon />
+        <Maximize size={16} />
         <span>Fit</span>
       </button>
     </div>
