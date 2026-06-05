@@ -49,21 +49,12 @@ Preview the production build locally:
 npm run preview
 ```
 
-## Generating the social image
-
-The Open Graph image (`public/og-image.png`) is rasterized from `public/og-image.svg`. After editing the SVG, regenerate the PNG with:
-
-```sh
-npm run gen:og
-```
-
 ## Tech stack
 
 - [React 18](https://react.dev/) and [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vitejs.dev/) for bundling and the dev server
 - HTML Canvas API for all image processing
 - [JSZip](https://stuk.github.io/jszip/) for batch ZIP export
-- [@resvg/resvg-js](https://github.com/yisibl/resvg-js) for social-image generation
 
 ## Contributing
 
