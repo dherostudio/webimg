@@ -156,6 +156,23 @@ export function Landing({ onFiles, theme }: Props) {
   return (
     <div className="landing">
       <section className="landing__hero">
+        <a
+          className="ph-badge"
+          href="https://www.producthunt.com/products/webimg?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-webimg"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            width={250}
+            height={54}
+            alt="webimg - A private, batch image editor that runs in your browser. | Product Hunt"
+            src={
+              theme === 'dark'
+                ? 'https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1164181&theme=dark&t=1780655317153'
+                : 'https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1164181&theme=neutral&t=1780655492774'
+            }
+          />
+        </a>
         <p className="landing__hero-eyebrow">Private by design</p>
         <h1 className="landing__title">
           Crop, resize, convert, and compress images in your browser
