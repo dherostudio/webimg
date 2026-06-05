@@ -117,12 +117,14 @@
 }
 
 .app-icon__glyph {
-  width: 62%;
-  height: auto;
+  /* Optical alignment: mark is 60% of the plate height, offset 15% from the
+     top (so ~25% sits below), nudging it up since the dot/slash sit high. */
+  height: 60%;
+  width: auto;
   position: absolute;
-  top: 50%;
+  top: 15%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   z-index: 2;
   display: block;
   filter: drop-shadow(0 0.5px 0 rgba(0, 0, 0, 0.4));

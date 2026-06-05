@@ -124,10 +124,17 @@
   --r-input: 7px;
 
   font-family: var(--font-ui);
-  font-feature-settings: 'ss01', 'cv11';
+  /* Premium text rendering: lighter, crisper glyphs (ideal for light-on-dark),
+     proper kerning and ligatures. (Geist's 'cv11'/'ss01' were dropped — they
+     don't map to Manrope.) */
+  font-kerning: normal;
+  font-feature-settings: 'liga' 1, 'calt' 1;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 [data-theme='dark'] {
@@ -136,6 +143,9 @@
 
 [data-theme='light'] {
   color-scheme: light;
+  /* Heavier, sharper dark-on-light text — antialiased thins it too much. */
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
 }
 
 * {
