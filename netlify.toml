@@ -4,3 +4,22 @@
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Security headers (set at the Netlify origin; passed through Cloudflare).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Clickjacking protection (frame-ancestors below covers modern browsers).
+    X-Frame-Options = "DENY"
+    # Stop MIME-type sniffing.
+    X-Content-Type-Options = "nosniff"
+    # Send only the origin to other sites; full path same-origin.
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Lock down browser features the app never uses; opt out of Topics.
+    Permissions-Policy = "accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), usb=(), browsing-topics=()"
+    # Force HTTPS for a year, including subdomains.
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    # Strict CSP. webimg loads zero third-party scripts; only its own bundle,
+    # Google Fonts (CSS + woff2), blob:/data: images, and same-origin Lottie JSON.
+    # 'unsafe-inline' is scoped to styles only (React inline styles / CSS vars).
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
