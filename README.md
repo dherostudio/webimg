@@ -2,7 +2,7 @@
 
 webimg is a free, browser-based image editor. Crop, resize, rotate, convert between formats, and compress images, all entirely on your device.
 
-Try it: https://webimg.netlify.app
+Try it: https://webimg.app
 
 ## Privacy
 
