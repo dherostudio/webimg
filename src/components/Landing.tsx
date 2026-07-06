@@ -156,6 +156,7 @@ export function Landing({ onFiles, theme }: Props) {
   return (
     <div className="landing">
       <section className="landing__hero">
+        <div className="hero-badges">
         <a
           className="ph-badge"
           href="https://www.producthunt.com/products/webimg?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-webimg"
@@ -173,6 +174,25 @@ export function Landing({ onFiles, theme }: Props) {
             }
           />
         </a>
+        <a
+          className="launchbuff-badge"
+          href="https://launchbuff.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Featured on LaunchBuff"
+        >
+          <img
+            width={256}
+            height={80}
+            alt="Featured on LaunchBuff"
+            src={
+              theme === 'dark'
+                ? '/launchbuff-featured-dark.svg'
+                : '/launchbuff-featured-light.svg'
+            }
+          />
+        </a>
+        </div>
         <p className="landing__hero-eyebrow">Private by design</p>
         <h1 className="landing__title">
           Crop, resize, convert, and compress images in your browser
