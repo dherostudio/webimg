@@ -49,6 +49,37 @@ Preview the production build locally:
 npm run preview
 ```
 
+## Chrome extension
+
+webimg also ships as a Chrome extension built from the same source. It adds
+two things the website can't offer:
+
+- A toolbar icon that opens the editor in a tab.
+- **Edit image in webimg** in the right-click menu of any image on any page.
+
+The extension installs with no host permissions. The first time you pick an
+image from a site, Chrome asks whether webimg may read that site's images;
+grant it once per site. Editing still happens entirely on your device, and
+fonts are bundled so the extension never contacts Google Fonts and works
+offline.
+
+### Building and loading it
+
+```sh
+npm run build:extension   # → dist-extension/
+```
+
+Then in Chrome open `chrome://extensions`, turn on **Developer mode**, choose
+**Load unpacked**, and select the `dist-extension` folder. While developing,
+`npm run watch:extension` rebuilds on change; click the reload icon on the
+extension card to pick up a new build.
+
+`npm run zip:extension` produces `webimg-extension.zip` for the Chrome Web
+Store. The manifest version is taken from `package.json`.
+
+Extension-only files live in `extension/` (manifest, service worker, icon) and
+`src/extension/` (entry point, bundled fonts, empty state, image hand-off).
+
 ## Tech stack
 
 - [React 18](https://react.dev/) and [TypeScript](https://www.typescriptlang.org/)

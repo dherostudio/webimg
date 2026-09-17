@@ -1,9 +1,10 @@
 import JSZip from 'jszip';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BatchSidebar } from './components/BatchSidebar';
 import { Editor, type EditorHandle } from './components/Editor';
 import { Inspector } from './components/Inspector';
 import { Landing } from './components/Landing';
+import { ExtensionHome } from './extension/ExtensionHome';
 import { Toolbar } from './components/Toolbar';
 import { TopBar } from './components/TopBar';
 import { ZoomHud } from './components/ZoomHud';
@@ -43,7 +44,14 @@ function newId(): string {
   return `b${nextBatchId++}`;
 }
 
-export default function App() {
+interface AppProps {
+  /** 'web' shows the marketing landing page when empty; 'extension' shows a bare drop zone. */
+  variant?: 'web' | 'extension';
+  /** Optional loader for images handed to the app on startup (extension context menu). */
+  loadInitial?: () => Promise<File[]>;
+}
+
+export default function App({ variant = 'web', loadInitial }: AppProps) {
   const { theme, toggle: toggleTheme } = useTheme();
   const editorRef = useRef<EditorHandle>(null);
   const dropAddRef = useRef<HTMLInputElement>(null);
@@ -121,6 +129,33 @@ export default function App() {
       setStatus({ kind: 'error', message: `Failed to load: ${(e as Error).message}` });
     }
   }, []);
+
+  // Startup hand-off (e.g. extension "Edit image in webimg"): load once on mount.
+  const initialLoaded = useRef(false);
+  useEffect(() => {
+    if (!loadInitial || initialLoaded.current) return;
+    initialLoaded.current = true;
+    let cancelled = false;
+    (async () => {
+      let files: File[];
+      try {
+        setStatus({ kind: 'info', message: 'Loading image from page…' });
+        files = await loadInitial();
+      } catch (e) {
+        if (!cancelled) setStatus({ kind: 'error', message: (e as Error).message });
+        return;
+      }
+      if (cancelled) return;
+      if (files.length === 0) {
+        setStatus(null);
+        return;
+      }
+      await handleFiles(files);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [loadInitial, handleFiles]);
 
   const handleSelectItem = useCallback((id: string) => {
     setActiveId(id);
@@ -341,7 +376,11 @@ export default function App() {
       />
 
       {batch.length === 0 ? (
-        <Landing onFiles={handleFiles} theme={theme} />
+        variant === 'extension' ? (
+          <ExtensionHome onFiles={handleFiles} />
+        ) : (
+          <Landing onFiles={handleFiles} theme={theme} />
+        )
       ) : (
         <main className={`stage${isBatch ? ' stage--batch' : ''}`}>
           {activeItem && (

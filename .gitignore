@@ -5,6 +5,8 @@ node_modules
 
 # Build output
 dist
+dist-extension
+webimg-extension.zip
 dist-ssr
 *.local
 
