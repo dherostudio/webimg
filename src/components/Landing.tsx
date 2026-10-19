@@ -192,6 +192,23 @@ export function Landing({ onFiles, theme }: Props) {
             }
           />
         </a>
+        <a
+          className="nicklaunches-badge"
+          href="https://nicklaunches.com/products/webimg/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            width={244}
+            height={56}
+            alt="webimg on Nick Launches"
+            src={
+              theme === 'dark'
+                ? 'https://nicklaunches.com/badges/featured-dark.png'
+                : 'https://nicklaunches.com/badges/featured.png'
+            }
+          />
+        </a>
         </div>
         <p className="landing__hero-eyebrow">Private by design</p>
         <h1 className="landing__title">

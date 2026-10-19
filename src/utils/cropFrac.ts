@@ -20,15 +20,3 @@ export function rectToFrac(rect: CropRect, imgW: number, imgH: number): CropFrac
     h: rect.h / imgH,
   };
 }
-
-/** Get the post-rotation bounds of an image. */
-export function orientedDims(
-  source: HTMLImageElement,
-  rotation: 0 | 90 | 180 | 270
-): { w: number; h: number } {
-  const swapped = rotation === 90 || rotation === 270;
-  return {
-    w: swapped ? source.naturalHeight : source.naturalWidth,
-    h: swapped ? source.naturalWidth : source.naturalHeight,
-  };
-}

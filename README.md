@@ -16,7 +16,7 @@ Every crop, resize, rotation, conversion, and compression runs locally in your b
 - **Resize** — set exact pixel dimensions with an optional aspect-ratio lock
 - **Convert** — export to WebP, AVIF, PNG, or JPEG (AVIF falls back to WebP where unsupported)
 - **Compress** — quality slider with a live file-size estimate
-- **Batch processing** — edit multiple images at once and export them as a single ZIP, each with its own filename
+- **Batch processing** — edit multiple images in one session, each with its own crop, size, rotation and filename, and export them as a single ZIP
 - **Light & dark themes**
 
 Supported input formats: JPEG, PNG, WebP, AVIF, GIF, BMP.
@@ -43,6 +43,13 @@ Type-check and build to `dist/`:
 npm run build
 ```
 
+Run the unit tests (Vitest; crop, fit, colour, filename and per-image edit logic in `src/utils/`):
+
+```sh
+npm test            # once
+npm run test:watch  # re-run on change
+```
+
 Preview the production build locally:
 
 ```sh
@@ -60,8 +67,7 @@ two things the website can't offer:
 The extension installs with no host permissions. The first time you pick an
 image from a site, Chrome asks whether webimg may read that site's images;
 grant it once per site. Editing still happens entirely on your device, and
-fonts are bundled so the extension never contacts Google Fonts and works
-offline.
+fonts are bundled (as on the website), so the extension works offline.
 
 ### Building and loading it
 
@@ -107,7 +113,7 @@ redistributable under MIT:
   or extract these files outside this project; obtain your own license from
   Flaticon if you need them.
 
-Fonts are loaded at runtime from Google Fonts and are not bundled in this
-repository: [Manrope](https://github.com/sharanda/manrope) and
+Fonts are installed from npm via [Fontsource](https://fontsource.org/) and
+bundled into the build (not committed to this repository): [Manrope](https://github.com/sharanda/manrope) and
 [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono), both under the
 [SIL Open Font License 1.1](https://openfontlicense.org/).

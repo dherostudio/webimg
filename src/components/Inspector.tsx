@@ -165,7 +165,10 @@ export function Inspector(props: Props) {
         )}
         {props.isBatch && (
           <Group title="Filename">
-            <p className="caveat">Each image has its own filename in the sidebar.</p>
+            <p className="caveat">
+              Crop, size, rotation and filename are set per image (rename in the sidebar).
+              Format, quality and background apply to all.
+            </p>
           </Group>
         )}
       </div>

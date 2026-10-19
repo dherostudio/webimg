@@ -442,7 +442,8 @@
 }
 
 .ph-badge:focus-visible,
-.launchbuff-badge:focus-visible {
+.launchbuff-badge:focus-visible,
+.nicklaunches-badge:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
@@ -458,6 +459,20 @@
   display: block;
   /* Native badge is 256×80; scaled to match the Product Hunt badge height. */
   width: 173px;
+  height: 54px;
+}
+
+.nicklaunches-badge {
+  display: inline-block;
+  line-height: 0;
+  border-radius: 10px;
+  animation: float-in 560ms var(--ease-apple) both;
+}
+
+.nicklaunches-badge img {
+  display: block;
+  /* Native badge is 244×56; scaled to match the Product Hunt badge height. */
+  width: 235px;
   height: 54px;
 }
 

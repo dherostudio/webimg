@@ -8,9 +8,19 @@ import { ExtensionHome } from './extension/ExtensionHome';
 import { Toolbar } from './components/Toolbar';
 import { TopBar } from './components/TopBar';
 import { ZoomHud } from './components/ZoomHud';
-import type { BatchItem, BgColor, CropFrac, CropRect, FitMode, OutputFormat, Rotation } from './types';
+import type { BatchItem, BgColor, CropRect, FitMode, ItemEdits, OutputFormat, Rotation } from './types';
 import { useTheme } from './useTheme';
-import { fracToRect, FULL_FRAC, orientedDims, rectToFrac } from './utils/cropFrac';
+import { fracToRect } from './utils/cropFrac';
+import {
+  cropEdits,
+  heightEdits,
+  initialEdits,
+  resetCropEdits,
+  rotatedDims,
+  rotateEdits,
+  uniqueName,
+  widthEdits,
+} from './utils/edits';
 import { downloadBlob, exportImage } from './utils/exportImage';
 import { extensionFor, toSlug } from './utils/slug';
 import { makeThumbnail } from './utils/thumbnail';
@@ -59,13 +69,9 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
   const [batch, setBatch] = useState<BatchItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const [cropFrac, setCropFrac] = useState<CropFrac>(FULL_FRAC);
-  const [outputWidth, setOutputWidth] = useState(0);
-  const [outputHeight, setOutputHeight] = useState(0);
+  // Per-image edits (crop, rotation, flips, output size) live on each BatchItem.
+  // Everything below is shared by the whole batch.
   const [aspectLocked, setAspectLocked] = useState(true);
-  const [rotation, setRotation] = useState<Rotation>(0);
-  const [flipH, setFlipH] = useState(false);
-  const [flipV, setFlipV] = useState(false);
   const [format, setFormat] = useState<OutputFormat>('webp');
   const [quality, setQuality] = useState(85);
   const [fit, setFit] = useState<FitMode>('contain');
@@ -80,18 +86,44 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
     [batch, activeId]
   );
 
+  const edits = activeItem?.edits;
+  const rotation: Rotation = edits?.rotation ?? 0;
+  const flipH = edits?.flipH ?? false;
+  const flipV = edits?.flipV ?? false;
+  const outputWidth = edits?.outputWidth ?? 0;
+  const outputHeight = edits?.outputHeight ?? 0;
+
+  const activeNatural = useMemo(
+    () =>
+      activeItem
+        ? { w: activeItem.source.naturalWidth, h: activeItem.source.naturalHeight }
+        : { w: 0, h: 0 },
+    [activeItem]
+  );
+
   // Active image's oriented dimensions — used to translate fraction crop to pixel crop
-  const activeDims = useMemo(() => {
-    if (!activeItem) return { w: 0, h: 0 };
-    return orientedDims(activeItem.source, rotation);
-  }, [activeItem, rotation]);
+  const activeDims = useMemo(() => rotatedDims(activeNatural, rotation), [activeNatural, rotation]);
 
   const cropRect: CropRect = useMemo(
-    () => fracToRect(cropFrac, activeDims.w, activeDims.h),
-    [cropFrac, activeDims]
+    () => (edits ? fracToRect(edits.cropFrac, activeDims.w, activeDims.h) : { x: 0, y: 0, w: 0, h: 0 }),
+    [edits, activeDims]
   );
 
   const cropAspect = cropRect.w > 0 && cropRect.h > 0 ? cropRect.w / cropRect.h : 1;
+
+  /** Apply `fn` to the active image's edits. */
+  const updateActive = useCallback(
+    (fn: (edits: ItemEdits, natural: { w: number; h: number }) => ItemEdits) => {
+      setBatch((prev) =>
+        prev.map((b) =>
+          b.id === activeId
+            ? { ...b, edits: fn(b.edits, { w: b.source.naturalWidth, h: b.source.naturalHeight }) }
+            : b
+        )
+      );
+    },
+    [activeId]
+  );
 
   const handleFiles = useCallback(async (files: File[]) => {
     setStatus(null);
@@ -106,25 +138,13 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
           originalFilename: file.name,
           customFilename: stripExt(file.name),
           thumbnailUrl,
+          edits: initialEdits({ w: source.naturalWidth, h: source.naturalHeight }),
         });
       }
-      setBatch((prev) => {
-        const next = [...prev, ...newItems];
-        // First import: initialize crop + dims based on the first new item
-        if (prev.length === 0 && newItems.length > 0) {
-          const first = newItems[0];
-          setActiveId(first.id);
-          const w = first.source.naturalWidth;
-          const h = first.source.naturalHeight;
-          setCropFrac(FULL_FRAC);
-          setOutputWidth(w);
-          setOutputHeight(h);
-          setRotation(0);
-          setFlipH(false);
-          setFlipV(false);
-        }
-        return next;
-      });
+      if (newItems.length === 0) return;
+      setBatch((prev) => [...prev, ...newItems]);
+      // Select the first new image if nothing is active yet
+      setActiveId((cur) => cur ?? newItems[0].id);
     } catch (e) {
       setStatus({ kind: 'error', message: `Failed to load: ${(e as Error).message}` });
     }
@@ -172,12 +192,6 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
         if (id === activeId) {
           setActiveId(next[0]?.id ?? null);
         }
-        if (next.length === 0) {
-          // Reset transient state
-          setCropFrac(FULL_FRAC);
-          setOutputWidth(0);
-          setOutputHeight(0);
-        }
         return next;
       });
     },
@@ -189,76 +203,62 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
   }, []);
 
   const handleCropChange = useCallback(
-    (next: CropRect) => {
-      if (activeDims.w === 0 || activeDims.h === 0) return;
-      const frac = rectToFrac(next, activeDims.w, activeDims.h);
-      setCropFrac(frac);
-      if (aspectLocked && outputWidth > 0 && next.h > 0) {
-        setOutputHeight(Math.max(1, Math.round(outputWidth / (next.w / next.h))));
-      }
-    },
-    [activeDims, aspectLocked, outputWidth]
+    (next: CropRect) => updateActive((e, n) => cropEdits(e, n, next, aspectLocked)),
+    [updateActive, aspectLocked]
   );
 
   const handleWidthChange = useCallback(
-    (w: number) => {
-      setOutputWidth(w);
-      if (aspectLocked && cropAspect > 0) {
-        setOutputHeight(Math.max(1, Math.round(w / cropAspect)));
-      }
-    },
-    [aspectLocked, cropAspect]
+    (w: number) => updateActive((e) => widthEdits(e, w, aspectLocked, cropAspect)),
+    [updateActive, aspectLocked, cropAspect]
   );
 
   const handleHeightChange = useCallback(
-    (h: number) => {
-      setOutputHeight(h);
-      if (aspectLocked && cropAspect > 0) {
-        setOutputWidth(Math.max(1, Math.round(h * cropAspect)));
-      }
-    },
-    [aspectLocked, cropAspect]
+    (h: number) => updateActive((e) => heightEdits(e, h, aspectLocked, cropAspect)),
+    [updateActive, aspectLocked, cropAspect]
   );
 
-  const handleResetCrop = useCallback(() => {
-    if (!activeItem) return;
-    const dims = orientedDims(activeItem.source, rotation);
-    setCropFrac(FULL_FRAC);
-    setOutputWidth(dims.w);
-    setOutputHeight(dims.h);
-  }, [activeItem, rotation]);
+  const handleResetCrop = useCallback(
+    () => updateActive((e, n) => resetCropEdits(e, n)),
+    [updateActive]
+  );
 
   const handleRotate = useCallback(
-    (next: Rotation) => {
-      if (!activeItem) return;
-      const dims = orientedDims(activeItem.source, next);
-      setRotation(next);
-      setCropFrac(FULL_FRAC);
-      setOutputWidth(dims.w);
-      setOutputHeight(dims.h);
-    },
-    [activeItem]
+    (next: Rotation) => updateActive((e, n) => rotateEdits(e, n, next)),
+    [updateActive]
   );
 
-  const handleResetTransform = useCallback(() => {
-    handleRotate(0);
-    setFlipH(false);
-    setFlipV(false);
-  }, [handleRotate]);
+  const handleFlipH = useCallback(
+    (v: boolean) => updateActive((e) => ({ ...e, flipH: v })),
+    [updateActive]
+  );
+
+  const handleFlipV = useCallback(
+    (v: boolean) => updateActive((e) => ({ ...e, flipV: v })),
+    [updateActive]
+  );
+
+  const handleResetTransform = useCallback(
+    () => updateActive((e, n) => ({ ...rotateEdits(e, n, 0), flipH: false, flipV: false })),
+    [updateActive]
+  );
 
   // Single-image export
   const exportSingle = useCallback(
     async (item: BatchItem) => {
-      const dims = orientedDims(item.source, rotation);
-      const pixCrop = fracToRect(cropFrac, dims.w, dims.h);
+      const e = item.edits;
+      const dims = rotatedDims(
+        { w: item.source.naturalWidth, h: item.source.naturalHeight },
+        e.rotation
+      );
+      const pixCrop = fracToRect(e.cropFrac, dims.w, dims.h);
       const result = await exportImage({
         source: item.source,
         crop: pixCrop,
-        outputWidth,
-        outputHeight,
-        rotation,
-        flipH,
-        flipV,
+        outputWidth: e.outputWidth,
+        outputHeight: e.outputHeight,
+        rotation: e.rotation,
+        flipH: e.flipH,
+        flipV: e.flipV,
         format,
         quality,
         fit,
@@ -268,7 +268,7 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
       const filename = `${slug}.${extensionFor(result.format)}`;
       return { filename, blob: result.blob, fellBack: result.fellBack };
     },
-    [cropFrac, outputWidth, outputHeight, rotation, flipH, flipV, format, quality, fit, bg]
+    [format, quality, fit, bg]
   );
 
   const handleExport = useCallback(async () => {
@@ -294,18 +294,7 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
         for (const item of batch) {
           const out = await exportSingle(item);
           if (out.fellBack) fellBackAny = true;
-          // Disambiguate duplicate filenames
-          let name = out.filename;
-          if (usedNames.has(name)) {
-            const dot = name.lastIndexOf('.');
-            const base = name.slice(0, dot);
-            const ext = name.slice(dot);
-            let n = 2;
-            while (usedNames.has(`${base}-${n}${ext}`)) n++;
-            name = `${base}-${n}${ext}`;
-          }
-          usedNames.add(name);
-          zip.file(name, out.blob);
+          zip.file(uniqueName(out.filename, usedNames), out.blob);
         }
         const blob = await zip.generateAsync({ type: 'blob' });
         const stamp = new Date().toISOString().slice(0, 10);
@@ -336,11 +325,9 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
     document.querySelector('.app--landing')?.scrollTo({ top: 0 });
   }, []);
 
-  const sourceDims = useMemo(() => {
-    if (!activeItem) return { w: null as number | null, h: null as number | null };
-    const d = orientedDims(activeItem.source, rotation);
-    return { w: d.w, h: d.h };
-  }, [activeItem, rotation]);
+  const sourceDims = activeItem
+    ? activeDims
+    : { w: null as number | null, h: null as number | null };
 
   const isBatch = batch.length > 1;
   const headerFilename = isBatch
@@ -402,8 +389,8 @@ export default function App({ variant = 'web', loadInitial }: AppProps) {
             flipH={flipH}
             flipV={flipV}
             onRotateChange={handleRotate}
-            onFlipHChange={setFlipH}
-            onFlipVChange={setFlipV}
+            onFlipHChange={handleFlipH}
+            onFlipVChange={handleFlipV}
             onResetTransform={handleResetTransform}
           />
 

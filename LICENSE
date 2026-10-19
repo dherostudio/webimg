@@ -33,5 +33,6 @@ covered by, or redistributable under, this MIT license:
   property of Flaticon and its authors. Obtain your own license from Flaticon
   before reusing, redistributing, or extracting these files.
 
-Fonts (Manrope and JetBrains Mono, both SIL Open Font License 1.1) are loaded at
-runtime from Google Fonts and are not bundled in this repository.
+Fonts (Manrope and JetBrains Mono, both SIL Open Font License 1.1) are installed
+from npm via Fontsource and bundled into the build; they are not committed to this
+repository.

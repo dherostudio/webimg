@@ -25,12 +25,23 @@ export interface CropFrac {
   h: number;
 }
 
+/** Edits that belong to one image. Format, quality, fit and background are shared by the batch. */
+export interface ItemEdits {
+  cropFrac: CropFrac;
+  rotation: Rotation;
+  flipH: boolean;
+  flipV: boolean;
+  outputWidth: number;
+  outputHeight: number;
+}
+
 export interface BatchItem {
   id: string;
   source: HTMLImageElement;
   originalFilename: string;
   customFilename: string;
   thumbnailUrl: string;
+  edits: ItemEdits;
 }
 
 export interface EditorState {
